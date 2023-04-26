@@ -58,8 +58,9 @@ for filePath in files:
 
 keys = naturalSort(list(results.keys()))
 
-for key in keys:
-    print(key, results[key])
-
-# TODO: Standardise sample name lengths and sort samples
-# TODO: Implement TSV Output layer
+with open(basePath + '/results.tsv', 'w') as outputFile:
+    outputWriter = csv.writer(outputFile, delimiter='\t')
+    outputWriter.writerow(['sample', 'peptide', 'peak_area'])
+    for key in keys:
+        for peak in results[key]:
+            outputWriter.writerow([key, peak[0], peak[1]])
