@@ -1,5 +1,12 @@
-import os
 import csv
+import os
+import re
+
+def naturalSort(l): 
+    convert = lambda text: int(text) if text.isdigit() else text.lower()
+    alphanumericKey = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+    return sorted(l, key=alphanumericKey)
+
 
 def getFilePaths(basePath):
     files = []
@@ -17,7 +24,7 @@ def getSampleName(filePath: str):
 
 
 def getPeakAreasFromTsv(filePath):
-    peakAreas = {}
+    peakAreas = []
 
     with open(filePath, 'r') as tsvFile:
         tsvReader = csv.reader(tsvFile, delimiter='\t')
@@ -32,8 +39,8 @@ def getPeakAreasFromTsv(filePath):
             if areaRowIndex != -1 and i >= areaRowIndex + 2:
                 if len(row) == 0:
                     break
-                print(row[0], ': ', row[-2])
-                peakAreas[row[0]] = row[-2]
+
+                peakAreas.append((row[0], row[-2]))
 
             i += 1
     
@@ -49,8 +56,10 @@ for filePath in files:
     sampleName = getSampleName(filePath)
     results[sampleName] = getPeakAreasFromTsv(filePath)
 
+keys = naturalSort(list(results.keys()))
 
-print("RESULTS:\n-----\n", results)
+for key in keys:
+    print(key, results[key])
 
 # TODO: Standardise sample name lengths and sort samples
 # TODO: Implement TSV Output layer
