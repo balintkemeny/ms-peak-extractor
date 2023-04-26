@@ -16,24 +16,26 @@ def getSampleName(filePath: str):
     return filePath.split('/')[-1].split('_', 1)[0]
 
 
-def getPeakAreasFromTsv(tsvFile):
+def getPeakAreasFromTsv(filePath):
     peakAreas = {}
-    csvReader = csv.reader(tsvFile, delimiter='\t')
 
-    areaRowIndex = -1
-    i = 0
+    with open(filePath, 'r') as tsvFile:
+        tsvReader = csv.reader(tsvFile, delimiter='\t')
 
-    for row in csvReader:
-        if len(row) > 0 and row[0] == '[area]':
-            areaRowIndex = i
+        areaRowIndex = -1
+        i = 0
 
-        if areaRowIndex != -1 and i >= areaRowIndex + 2:
-            if len(row) == 0:
-                break
-            print(row[0], ': ', row[-2])
-            peakAreas[row[0]] = row[-2]
+        for row in tsvReader:
+            if len(row) > 0 and row[0] == '[area]':
+                areaRowIndex = i
 
-        i += 1
+            if areaRowIndex != -1 and i >= areaRowIndex + 2:
+                if len(row) == 0:
+                    break
+                print(row[0], ': ', row[-2])
+                peakAreas[row[0]] = row[-2]
+
+            i += 1
     
     return peakAreas
 
@@ -44,9 +46,9 @@ files = getFilePaths(basePath)
 results = {}
 
 for filePath in files:
-    with open(filePath, 'r') as f:
-        sampleName = getSampleName(filePath)
-        results[sampleName] = getPeakAreasFromTsv(f)
+    sampleName = getSampleName(filePath)
+    results[sampleName] = getPeakAreasFromTsv(filePath)
+
 
 print("RESULTS:\n-----\n", results)
 
